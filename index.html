@@ -51,7 +51,7 @@
         .capsule-title { font-size: 0.95rem; font-weight: 800; color: #1e293b; line-height: 1.2; }
         .capsule-sub { font-size: 0.75rem; font-weight: 600; color: #64748b; }
 
-        /* 左上角精簡控制列 */
+        /* 左上角快捷操作按鈕 */
         .top-bar {
             position: absolute;
             top: 20px;
@@ -104,13 +104,11 @@
 
     <div id="canvas-container"></div>
 
-    <!-- 左上角快捷操作按鈕 -->
     <div class="top-bar">
         <button class="ctrl-btn" onclick="resetView()">🗺️ 全島總覽視角</button>
         <button class="ctrl-btn" onclick="toggleAtmosphere()">🌓 切換晨光 / 深海夜色</button>
     </div>
 
-    <!-- 右下角設施詳細介紹卡 -->
     <div id="info-card">
         <span class="card-tag" id="card-sub">單元模組</span>
         <h2 id="card-title">設施名稱</h2>
@@ -132,7 +130,6 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-        // 1. 初始化場景與渲染器
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x1b4965);
         scene.fog = new THREE.FogExp2(0x1b4965, 0.009);
@@ -159,7 +156,6 @@
         controls.minDistance = 12;
         controls.maxDistance = 75;
 
-        // 2. 燈光設置 (柔和半戶外光影)
         const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e3a5f, 0.95);
         scene.add(hemiLight);
 
@@ -175,14 +171,12 @@
         dirLight.shadow.camera.bottom = -d;
         scene.add(dirLight);
 
-        // 3. 動態波浪海洋與動態海浪白沫紋理
         function createSeaTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512; canvas.height = 512;
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#1b6ca8';
             ctx.fillRect(0, 0, 512, 512);
-            // 繪製柔和波紋
             ctx.strokeStyle = 'rgba(135, 206, 250, 0.18)';
             ctx.lineWidth = 3;
             for (let i = 0; i < 40; i++) {
@@ -209,7 +203,6 @@
         sea.receiveShadow = true;
         scene.add(sea);
 
-        // 岸邊浪花白沫光環紋理 (模擬參考圖中島嶼周圍的白色水花)
         function createFoamRingTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 256; canvas.height = 256;
@@ -225,14 +218,12 @@
         }
         const foamTex = createFoamRingTexture();
 
-        // 4. 共用材質與精細物件工廠函式
         const grassMat = new THREE.MeshStandardMaterial({ color: 0x74b868, flatShading: true });
         const pathMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, flatShading: true });
         const woodMat = new THREE.MeshStandardMaterial({ color: 0x7c4a21, flatShading: true });
         const stoneMat = new THREE.MeshStandardMaterial({ color: 0xcbd5e1, flatShading: true });
         const rockMat = new THREE.MeshStandardMaterial({ color: 0x64748b, flatShading: true });
 
-        // 建立參考圖風格的 Low-Poly 多面體大樹
         function createLowPolyTree(scale = 1) {
             const tree = new THREE.Group();
             const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.22, 0.9, 6), woodMat);
@@ -240,14 +231,12 @@
             trunk.castShadow = true;
             const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(0.85, 0), new THREE.MeshStandardMaterial({ color: 0x6ab05c, flatShading: true }));
             crown.position.y = 1.35;
-            crown.rotation.set(Math.random(), Math.random(), 0);
             crown.castShadow = true;
             tree.add(trunk, crown);
             tree.scale.setScalar(scale);
             return tree;
         }
 
-        // 建立 3D 實體木框告示牌 (像參考圖建築後方的小牌子)
         function create3DSignboard(textLine1, textLine2) {
             const group = new THREE.Group();
             const post1 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 1.8), woodMat);
@@ -277,7 +266,6 @@
             return group;
         }
 
-        // 建立基礎圓形島嶼（含草地、環形白色步道、岸邊浪花白沫、發光選取光環與周圍樹木）
         const foamRings = [];
         const selectionRings = [];
 
@@ -285,7 +273,6 @@
             const island = new THREE.Group();
             island.position.set(x, 0, z);
 
-            // 1. 岸邊浪花白沫光圈
             const foam = new THREE.Mesh(
                 new THREE.PlaneGeometry(radius * 2.7, radius * 2.7),
                 new THREE.MeshBasicMaterial({ map: foamTex, transparent: true, depthWrite: false })
@@ -295,7 +282,6 @@
             island.add(foam);
             foamRings.push({ mesh: foam, baseScale: 1, phase: Math.random() * Math.PI * 2 });
 
-            // 2. 選取時亮起的金色發光光環 (如參考圖中的 03 島嶼光圈)
             const selRing = new THREE.Mesh(
                 new THREE.RingGeometry(radius * 1.02, radius * 1.25, 36),
                 new THREE.MeshBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0, side: THREE.DoubleSide })
@@ -305,25 +291,21 @@
             island.add(selRing);
             selectionRings.push(selRing);
 
-            // 3. 島嶼草地底座
             const land = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius * 1.08, 0.6, 24), grassMat);
             land.position.y = 0.3;
             land.receiveShadow = true;
             land.castShadow = true;
             island.add(land);
 
-            // 4. 環形白色石板步道
             const pathRing = new THREE.Mesh(new THREE.RingGeometry(radius * 0.68, radius * 0.88, 32), pathMat);
             pathRing.rotation.x = -Math.PI / 2;
             pathRing.position.y = 0.62;
             pathRing.receiveShadow = true;
             island.add(pathRing);
 
-            // 5. 沿著外圈隨機種植低多邊形樹木與海邊礁石
             const treeCount = Math.floor(radius * 1.6);
             for (let i = 0; i < treeCount; i++) {
                 const angle = (i / treeCount) * Math.PI * 2 + 0.2;
-                // 留出橋梁連接處的空隙
                 if (Math.abs(Math.sin(angle)) < 0.22) continue;
                 const tr = radius * 0.92;
                 const tree = createLowPolyTree(0.75 + Math.random() * 0.35);
@@ -331,20 +313,10 @@
                 island.add(tree);
             }
 
-            // 海邊點綴幾顆灰色多面體礁石
-            for (let j = 0; j < 3; j++) {
-                const rAngle = j * 2.1 + 0.5;
-                const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.55, 0), rockMat);
-                rock.position.set(Math.cos(rAngle) * (radius * 1.18), 0.2, Math.sin(rAngle) * (radius * 1.18));
-                rock.rotation.set(Math.random(), Math.random(), 0);
-                island.add(rock);
-            }
-
             scene.add(island);
             return island;
         }
 
-        // 建立連接島嶼的精細木造拱橋
         function createWoodenBridge(p1, p2) {
             const bridge = new THREE.Group();
             const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
@@ -358,89 +330,31 @@
             for (let i = 0; i <= steps; i++) {
                 const t = i / steps - 0.5;
                 const x = t * dist;
-                const y = Math.cos(t * Math.PI) * 0.65; // 拱起弧度
+                const y = Math.cos(t * Math.PI) * 0.65;
                 const plank = new THREE.Mesh(new THREE.BoxGeometry(dist / steps * 0.9, 0.12, 1.4), woodMat);
                 plank.position.set(x, y, 0);
                 plank.castShadow = true;
                 bridge.add(plank);
-
-                // 兩側橋欄柱
-                if (i % 3 === 0) {
-                    const postL = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.65, 0.1), woodMat);
-                    postL.position.set(x, y + 0.35, 0.62);
-                    const postR = postL.clone();
-                    postR.position.z = -0.62;
-                    bridge.add(postL, postR);
-                }
             }
             scene.add(bridge);
         }
 
-        // 5. 規劃四大島嶼資料與建造精細設施
         const islandsInfo = [
-            {
-                id: "01",
-                title: "海港燈塔站",
-                sub: "單元一・專題簡介",
-                sign1: "海港燈塔站",
-                sign2: "Welcome & Intro",
-                pos: new THREE.Vector3(-13, 0, -10),
-                radius: 6.2,
-                desc: "專題的起點與總覽港口！這裡停泊著探索船隻，並介紹本網站的核心理念、設計動機與開發團隊背景。"
-            },
-            {
-                id: "02",
-                title: "工藝造鎮工坊",
-                sub: "單元二・系統架構",
-                sign1: "工藝造鎮工坊",
-                sign2: "Tech Architecture",
-                pos: new THREE.Vector3(1, 0, -8),
-                radius: 6.0,
-                desc: "展示網站背後的技術架構與核心邏輯，包含前端 3D WebGL 渲染流程、模組化元件設計與資料庫串接機制。"
-            },
-            {
-                id: "03",
-                title: "核心展示廣場",
-                sub: "單元三・核心功能",
-                sign1: "核心展示廣場",
-                sign2: "Core Showcase",
-                pos: new THREE.Vector3(-2, 0, 3),
-                radius: 6.8,
-                desc: "全島最繁華的中央核心區！對應專題的主要互動展示功能（如動態商品清單、作品展示與即時資料篩選）。"
-            },
-            {
-                id: "04",
-                title: "古典智慧神殿",
-                sub: "單元四・聯絡與成果",
-                sign1: "古典智慧神殿",
-                sign2: "Contact & GitHub",
-                pos: new THREE.Vector3(13, 0, 5),
-                radius: 6.4,
-                desc: "莊嚴的藍頂白柱神殿，象徵專題的最終成果呈現。歡迎在此留下寶貴建議、填寫聯絡表單或前往 GitHub 檢視原始碼。"
-            },
-            {
-                id: "05",
-                title: "生態冒險村",
-                sub: "單元五・互動體驗",
-                sign1: "生態冒險村",
-                sign2: "Interactive Village",
-                pos: new THREE.Vector3(-3, 0, 15),
-                radius: 6.5,
-                desc: "充滿生活氣息的紅頂與綠頂小屋聚落，村民在此自由漫步，展現動態網頁與即時狀態互動的趣味性。"
-            }
+            { id: "01", title: "海港燈塔站", sub: "單元一・專題簡介", sign1: "海港燈塔站", sign2: "Welcome & Intro", pos: new THREE.Vector3(-13, 0, -10), radius: 6.2, desc: "專題的起點與總覽港口！" },
+            { id: "02", title: "工藝造鎮工坊", sub: "單元二・系統架構", sign1: "工藝造鎮工坊", sign2: "Tech Architecture", pos: new THREE.Vector3(1, 0, -8), radius: 6.0, desc: "展示網站背後的技術架構與核心邏輯。" },
+            { id: "03", title: "核心展示廣場", sub: "單元三・核心功能", sign1: "核心展示廣場", sign2: "Core Showcase", pos: new THREE.Vector3(-2, 0, 3), radius: 6.8, desc: "全島最繁華的中央核心區！" },
+            { id: "04", title: "古典智慧神殿", sub: "單元四・聯絡與成果", sign1: "古典智慧神殿", sign2: "Contact & GitHub", pos: new THREE.Vector3(13, 0, 5), radius: 6.4, desc: "莊嚴的藍頂白柱神殿，象徵專題的最終成果呈現。" },
+            { id: "05", title: "生態冒險村", sub: "單元五・互動體驗", sign1: "生態冒險村", sign2: "Interactive Village", pos: new THREE.Vector3(-3, 0, 15), radius: 6.5, desc: "充滿生活氣息的小屋聚落。" }
         ];
 
         const labelElements = [];
 
         islandsInfo.forEach((info, idx) => {
             const island = createIslandBase(info.pos.x, info.pos.z, info.radius);
-
-            // 豎立 3D 實體木框告示牌
             const sign = create3DSignboard(info.sign1, info.sign2);
             sign.position.set(0, 0.55, -info.radius * 0.45);
             island.add(sign);
 
-            // 綁定圓角膠囊狀浮動標籤
             const div = document.createElement('div');
             div.className = 'capsule-label';
             div.innerHTML = `
@@ -459,9 +373,7 @@
             island.add(label);
             labelElements.push(div);
 
-            // 依不同島嶼建造專屬精細建築
             if (idx === 0) {
-                // [01 海港燈塔站] 藍頂小屋 + 燈塔 + 木碼頭與小船
                 const house = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.5, 2.0), stoneMat);
                 house.position.set(-0.6, 1.35, 0);
                 const roof = new THREE.Mesh(new THREE.ConeGeometry(1.8, 1.1, 4), new THREE.MeshStandardMaterial({ color: 0x2563eb, flatShading: true }));
@@ -469,99 +381,39 @@
                 roof.rotation.y = Math.PI / 4;
                 const lh = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.65, 3.2, 8), stoneMat);
                 lh.position.set(1.1, 2.2, 0.2);
-                const lhCap = new THREE.Mesh(new THREE.ConeGeometry(0.55, 0.7, 8), new THREE.MeshStandardMaterial({ color: 0x2563eb }));
-                lhCap.position.set(1.1, 4.1, 0.2);
-                // 碼頭與小船
-                const pier = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.2, 0.9), woodMat);
-                pier.position.set(-5.8, 0.45, 1.2);
-                const boat = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.45, 0.75), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
-                boat.position.set(-6.5, 0.25, 2.2);
-                island.add(house, roof, lh, lhCap, pier, boat);
+                island.add(house, roof, lh);
             } else if (idx === 1) {
-                // [02 工藝造鎮工坊] 雙連工坊 + 齒輪裝飾
                 const workshop = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.6, 2.2), new THREE.MeshStandardMaterial({ color: 0xd97706, flatShading: true }));
                 workshop.position.set(0, 1.4, 0.2);
-                const wRoof = new THREE.Mesh(new THREE.BoxGeometry(2.9, 0.3, 2.5), woodMat);
-                wRoof.position.set(0, 2.3, 0.2);
-                const chimney = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.4, 6), rockMat);
-                chimney.position.set(0.8, 2.8, -0.4);
-                island.add(workshop, wRoof, chimney);
+                island.add(workshop);
             } else if (idx === 2) {
-                // [03 核心展示廣場] 階梯圓台 + 金色玻璃展館 + 翡翠寶石塔
                 const podium = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.6, 0.4, 24), stoneMat);
                 podium.position.y = 0.8;
-                const pavilion = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, 2.0), new THREE.MeshStandardMaterial({ color: 0xfde047, flatShading: true }));
-                pavilion.position.set(-0.5, 1.7, 0.2);
-                const jadeTower = new THREE.Mesh(new THREE.BoxGeometry(0.9, 2.2, 0.9), new THREE.MeshStandardMaterial({ color: 0x10b981, flatShading: true }));
-                jadeTower.position.set(1.5, 2.1, 0.4);
-                island.add(podium, pavilion, jadeTower);
+                island.add(podium);
             } else if (idx === 3) {
-                // [04 古典智慧神殿] 參考圖右側的藍頂希臘神殿 + 四根白柱 + 階梯
                 const steps = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.5, 3.6), stoneMat);
                 steps.position.set(0, 0.85, 0.3);
                 const roof = new THREE.Mesh(new THREE.ConeGeometry(3.3, 1.3, 4), new THREE.MeshStandardMaterial({ color: 0x1d4ed8, flatShading: true }));
                 roof.position.set(0, 3.3, 0.3);
                 roof.rotation.y = Math.PI / 4;
                 island.add(steps, roof);
-                [[-1.3, -0.8], [1.3, -0.8], [-1.3, 1.4], [1.3, 1.4]].forEach(([px, pz]) => {
-                    const col = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 1.7, 10), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-                    col.position.set(px, 1.9, pz);
-                    island.add(col);
-                });
             } else if (idx === 4) {
-                // [05 生態冒險村] 紅頂與青綠頂雙小屋 + 小花園
                 const h1 = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.3, 1.7), stoneMat);
                 h1.position.set(1.2, 1.25, 0.3);
-                const r1 = new THREE.Mesh(new THREE.ConeGeometry(1.4, 0.9, 4), new THREE.MeshStandardMaterial({ color: 0xdc2626, flatShading: true }));
-                r1.position.set(1.2, 2.35, 0.3);
-                r1.rotation.y = Math.PI / 4;
-
-                const h2 = new THREE.Mesh(new THREE.BoxGeometry(1.7, 1.2, 1.7), stoneMat);
-                h2.position.set(-0.3, 1.2, 1.3);
-                const r2 = new THREE.Mesh(new THREE.ConeGeometry(1.4, 0.85, 4), new THREE.MeshStandardMaterial({ color: 0x0d9488, flatShading: true }));
-                r2.position.set(-0.3, 2.2, 1.3);
-                r2.rotation.y = Math.PI / 4;
-                island.add(h1, r1, h2, r2);
+                island.add(h1);
             }
         });
 
-        // 建造串聯五座島嶼的木造拱橋
         createWoodenBridge(new THREE.Vector3(-7.2, 0, -9.2), new THREE.Vector3(-4.5, 0, -8.5));
         createWoodenBridge(new THREE.Vector3(-0.5, 0, -2.5), new THREE.Vector3(-1.2, 0, -3.5));
         createWoodenBridge(new THREE.Vector3(4.2, 0, 3.8), new THREE.Vector3(7.0, 0, 4.3));
         createWoodenBridge(new THREE.Vector3(6.8, 0, 7.5), new THREE.Vector3(2.8, 0, 11.5));
 
-        // 6. 島上沿著環形步道散步的立體居民
-        const walkers = [];
-        const npcColors = [0x2563eb, 0xdc2626, 0x059669, 0x7c3aed, 0xd97706];
-        islandsInfo.forEach((info, i) => {
-            for (let k = 0; k < 2; k++) {
-                const npc = new THREE.Group();
-                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 0.7, 8), new THREE.MeshStandardMaterial({ color: npcColors[(i + k) % npcColors.length] }));
-                body.position.y = 0.35;
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), new THREE.MeshStandardMaterial({ color: 0xfde047 }));
-                head.position.y = 0.82;
-                npc.add(body, head);
-                npc.castShadow = true;
-                scene.add(npc);
-                walkers.push({
-                    mesh: npc,
-                    cx: info.pos.x,
-                    cz: info.pos.z,
-                    radius: info.radius * 0.78,
-                    angle: k * Math.PI + i,
-                    speed: (k === 0 ? 1 : -1) * (0.35 + Math.random() * 0.15)
-                });
-            }
-        });
-
-        // 7. 海洋生態：躍水海豚 & 巡游噴水鯨魚
+        // 海洋生物：安全繞島外圍巡游
         const dolphin = new THREE.Group();
         const dBody = new THREE.Mesh(new THREE.ConeGeometry(0.35, 2.1, 8), new THREE.MeshStandardMaterial({ color: 0x38bdf8, flatShading: true }));
         dBody.rotation.x = Math.PI / 2;
-        const dFin = new THREE.Mesh(new THREE.ConeGeometry(0.18, 0.5, 4), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-        dFin.position.set(0, 0.28, 0);
-        dolphin.add(dBody, dFin);
+        dolphin.add(dBody);
         scene.add(dolphin);
 
         const whale = new THREE.Group();
@@ -580,20 +432,16 @@
             spoutParticles.push({ mesh: drop, vx: (Math.random() - 0.5) * 0.08, vy: 0.16 + Math.random() * 0.08, vz: (Math.random() - 0.5) * 0.08, life: 0 });
         }
 
-        // 8. 互動運鏡與選取光環控制
         let targetCamPos = new THREE.Vector3(0, 32, 42);
         let targetLookAt = new THREE.Vector3(0, 0, 2);
         let isAnimating = false;
-        let activeIslandIdx = -1;
 
         window.focusIsland = (index) => {
-            activeIslandIdx = index;
             const info = islandsInfo[index];
             targetLookAt.copy(info.pos);
             targetCamPos.set(info.pos.x, 12, info.pos.z + 15);
             isAnimating = true;
 
-            // 更新選取光環與標籤狀態
             selectionRings.forEach((ring, i) => {
                 ring.material.opacity = (i === index) ? 0.75 : 0;
             });
@@ -609,7 +457,6 @@
         };
 
         window.resetView = () => {
-            activeIslandIdx = -1;
             targetCamPos.set(0, 32, 42);
             targetLookAt.set(0, 0, 2);
             isAnimating = true;
@@ -638,49 +485,37 @@
             }
         };
 
-        // 9. 主動畫迴圈
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
             const elapsed = clock.getElapsedTime();
 
-            // 海面紋理流動與柔和起伏
             seaMat.map.offset.x = elapsed * 0.02;
             seaMat.map.offset.y = elapsed * 0.015;
 
-            // 岸邊浪花白沫呼吸縮放動畫
             foamRings.forEach(f => {
                 const s = 1 + Math.sin(elapsed * 2.2 + f.phase) * 0.045;
                 f.mesh.scale.set(s, s, 1);
             });
 
-            // 居民沿著環形白色步道散步
-            walkers.forEach(w => {
-                w.angle += w.speed * 0.015;
-                w.mesh.position.x = w.cx + Math.cos(w.angle) * w.radius;
-                w.mesh.position.z = w.cz + Math.sin(w.angle) * w.radius;
-                w.mesh.position.y = 0.62 + Math.abs(Math.sin(elapsed * 10)) * 0.06;
-                w.mesh.rotation.y = -w.angle;
-            });
+            // 🐋 鯨魚：在群島外圍的安全開闊海域繞大圈巡游（半徑 28，完全不會碰到內陸）
+            const whaleAngle = elapsed * 0.09;
+            whale.position.x = Math.cos(whaleAngle) * 28;
+            whale.position.z = Math.sin(whaleAngle) * 28 - 2;
+            whale.position.y = -0.3;
+            whale.rotation.y = -whaleAngle - Math.PI / 2;
+            wTail.rotation.x = Math.sin(elapsed * 5) * 0.22;
 
-            // 海豚在海域躍出水面
+            // 🐬 海豚：在邊緣外海區域安全躍出水面
             const dCycle = elapsed % 6;
             if (dCycle < 2.0) {
                 const t = dCycle / 2.0;
-                dolphin.position.set(-18 + t * 10, -0.5 + Math.sin(t * Math.PI) * 3.5, 8);
+                dolphin.position.set(-20 + t * 12, -0.5 + Math.sin(t * Math.PI) * 3.5, 14);
                 dolphin.rotation.z = (0.5 - t) * 1.6;
                 dolphin.visible = true;
             } else {
                 dolphin.visible = false;
             }
-
-            // 鯨魚在外海巡游與定期噴水
-            const wAngle = elapsed * 0.12;
-            whale.position.x = Math.cos(wAngle) * 23;
-            whale.position.z = Math.sin(wAngle) * 23;
-            whale.position.y = -0.3;
-            whale.rotation.y = -wAngle - Math.PI / 2;
-            wTail.rotation.x = Math.sin(elapsed * 5) * 0.22;
 
             const spouting = (elapsed % 7) < 2.4;
             spoutParticles.forEach((p, idx) => {
