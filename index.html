@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巴比倫空中花園 - 3D 專題導覽地圖</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { overflow: hidden; background-color: #1a1a2e; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; }
+
+        /* 古代石碑風格 UI 面板 */
+        .ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(38, 28, 20, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            color: #f4e8d1;
+            max-width: 300px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .ui-panel h1 { font-size: 1.3rem; color: #ffd700; margin-bottom: 8px; letter-spacing: 1px; }
+        .ui-panel p { font-size: 0.85rem; line-height: 1.5; color: #dcd0c0; margin-bottom: 15px; }
+
+        /* 樓層傳送按鈕 */
+        .nav-buttons { display: flex; flex-direction: column; gap: 8px; }
+        button {
+            background: linear-gradient(135deg, #5c4328, #3d2b18);
+            color: #ffd700;
+            border: 1px solid #d4af37;
+            padding: 10px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-align: left;
+            transition: all 0.25s ease;
+        }
+        button:hover { background: #d4af37; color: #261c14; font-weight: bold; transform: translateX(4px); }
+
+        /* 資訊彈出視窗 */
+        #info-card {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(38, 28, 20, 0.9);
+            border: 2px solid #4ecdc4;
+            border-radius: 10px;
+            padding: 20px;
+            color: #fff;
+            width: 320px;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+        }
+        #info-card h2 { color: #4ecdc4; font-size: 1.15rem; margin-bottom: 8px; }
+        #info-card p { font-size: 0.9rem; line-height: 1.5; color: #e0e0e0; }
+        .close-btn { margin-top: 12px; background: #4ecdc4; color: #1a1a2e; border: none; text-align: center; width: 100%; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <!-- 左側導覽控制面板 -->
+    <div class="ui-panel">
+        <h1>🏛️ 巴比倫空中花園</h1>
+        <p>拖曳滑鼠旋轉視角、滾輪縮放。點擊下方石碑樓層探索專題內容：</p>
+        <div class="nav-buttons">
+            <button onclick="focusLevel(0)">1F 迎賓港口與水車（專題簡介）</button>
+            <button onclick="focusLevel(1)">2F 巴比倫繁華市集（核心展示）</button>
+            <button onclick="focusLevel(2)">3F 大圖書館星象儀（技術架構）</button>
+            <button onclick="focusLevel(3)">4F 頂層空中神殿（聯絡我們）</button>
+            <button onclick="toggleAtmosphere()" style="margin-top: 8px; border-color: #4ecdc4; color: #4ecdc4;">🌓 切換白晝暖陽 / 星夜模式</button>
+        </div>
+    </div>
+
+    <!-- 右下角資料展示卡 -->
+    <div id="info-card">
+        <h2 id="card-title">樓層標題</h2>
+        <p id="card-desc">這裡將顯示該樓層對應的專題網站資料內容。</p>
+        <button class="close-btn" onclick="closeCard()">關閉石碑資訊</button>
+    </div>
+
+    <!-- 引入 Three.js 與 OrbitControls -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // 1. 初始化場景、相機與渲染器
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffb76b); // 黃金時刻暖陽背景
+        scene.fog = new THREE.FogExp2(0xffb76b, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(22, 18, 22);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // 2. 軌道控制器 (允許滑鼠旋轉與縮放)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.maxPolarAngle = Math.PI / 2 - 0.05; // 防止視角鑽到地底
+
+        // 3. 光源設置
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const sunLight = new THREE.DirectionalLight(0xffeedd, 1.5);
+        sunLight.position.set(15, 30, 15);
+        sunLight.castShadow = true;
+        scene.add(sunLight);
+
+        // 4. 建立巴比倫空中花園 (多層階梯浮空島)
+        const gardenGroup = new THREE.Group();
+        scene.add(gardenGroup);
+
+        // 材質庫 (Low-Poly 平面著色)
+        const stoneMat = new THREE.MeshStandardMaterial({ color: 0xd9a773, flatShading: true });
+        const grassMat = new THREE.MeshStandardMaterial({ color: 0x4a8f49, flatShading: true });
+        const waterMat = new THREE.MeshStandardMaterial({ color: 0x38b6ff, emissive: 0x004466, flatShading: true });
+        const goldMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.6, roughness: 0.3 });
+
+        // 浮空島倒錐形岩石底座
+        const baseGeo = new THREE.ConeGeometry(11, 10, 7);
+        const baseMesh = new THREE.Mesh(baseGeo, new THREE.MeshStandardMaterial({ color: 0x6e5641, flatShading: true }));
+        baseMesh.rotation.x = Math.PI;
+        baseMesh.position.y = -5;
+        gardenGroup.add(baseMesh);
+
+        // 四層階梯露台設計
+        const levelsData = [
+            { y: 0.5, size: 14, title: "1F 迎賓港口與水車", desc: "歡迎來到專題導覽！這裡展示網站核心理念、團隊成員介紹與系統操作指南。" },
+            { y: 3.0, size: 10.5, title: "2F 巴比倫繁華市集", desc: "核心互動展示區：可在此瀏覽商品列表、即時篩選分類，並串接資料庫進行購物車操作。" },
+            { y: 5.5, size: 7, title: "3F 大圖書館與星象儀", desc: "技術架構區：解析前端介面、WebGL 3D 渲染流程與後端 API 資料庫串接邏輯。" },
+            { y: 8.0, size: 3.8, title: "4F 頂層空中神殿", desc: "通訊與許願池：歡迎在此留下您的寶貴建議、填寫聯絡表單或前往 GitHub 檢視原始碼。" }
+        ];
+
+        const interactiveMeshes = [];
+
+        levelsData.forEach((lvl, index) => {
+            // 石造基座
+            const tierGeo = new THREE.BoxGeometry(lvl.size, 2, lvl.size);
+            const tierMesh = new THREE.Mesh(tierGeo, stoneMat);
+            tierMesh.position.y = lvl.y;
+            tierMesh.castShadow = true;
+            tierMesh.receiveShadow = true;
+            tierMesh.userData = { levelIndex: index };
+            gardenGroup.add(tierMesh);
+            interactiveMeshes.push(tierMesh);
+
+            // 露台綠地與垂吊植物邊緣
+            const grassGeo = new THREE.BoxGeometry(lvl.size + 0.3, 0.3, lvl.size + 0.3);
+            const grassMesh = new THREE.Mesh(grassGeo, grassMat);
+            grassMesh.position.y = lvl.y + 1.05;
+            gardenGroup.add(grassMesh);
+
+            // 角落裝飾石柱
+            const offset = lvl.size / 2 - 0.5;
+            const pillarPositions = [[-offset, -offset], [offset, -offset], [-offset, offset], [offset, offset]];
+            pillarPositions.forEach(pos => {
+                const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.3, 1.5, 6), stoneMat);
+                pillar.position.set(pos[0], lvl.y + 1.8, pos[1]);
+                gardenGroup.add(pillar);
+            });
+        });
+
+        // 頂層黃金神殿與瀑布水脈
+        const temple = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), goldMat);
+        temple.position.y = 10.2;
+        gardenGroup.add(temple);
+
+        const waterfall = new THREE.Mesh(new THREE.BoxGeometry(1.2, 12, 0.4), waterMat);
+        waterfall.position.set(0, 2, 7.2);
+        gardenGroup.add(waterfall);
+
+        // 5. 互動與相機平滑運鏡功能
+        let targetCamPos = new THREE.Vector3(22, 18, 22);
+        let targetLookAt = new THREE.Vector3(0, 4, 0);
+        let isAnimating = false;
+
+        window.focusLevel = (index) => {
+            const lvl = levelsData[index];
+            const dist = 14 - index * 1.5;
+            targetCamPos.set(dist, lvl.y + 5, dist);
+            targetLookAt.set(0, lvl.y + 1, 0);
+            isAnimating = true;
+
+            // 顯示對應資訊卡
+            document.getElementById('card-title').innerText = lvl.title;
+            document.getElementById('card-desc').innerText = lvl.desc;
+            document.getElementById('info-card').style.display = 'block';
+        };
+
+        window.closeCard = () => {
+            document.getElementById('info-card').style.display = 'none';
+        };
+
+        // 切換白晝與星夜模式
+        let isNight = false;
+        window.toggleAtmosphere = () => {
+            isNight = !isNight;
+            if (isNight) {
+                scene.background = new THREE.Color(0x0f172a);
+                scene.fog.color = new THREE.Color(0x0f172a);
+                sunLight.intensity = 0.3;
+                ambientLight.intensity = 0.3;
+                waterMat.emissive = new THREE.Color(0x00ffff);
+            } else {
+                scene.background = new THREE.Color(0xffb76b);
+                scene.fog.color = new THREE.Color(0xffb76b);
+                sunLight.intensity = 1.5;
+                ambientLight.intensity = 0.6;
+                waterMat.emissive = new THREE.Color(0x004466);
+            }
+        };
+
+        // 6. 動畫迴圈
+        const clock = new THREE.Clock();
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            // 浮空島上下微幅漂浮與頂端神殿旋轉
+            gardenGroup.position.y = Math.sin(elapsed * 1.2) * 0.25;
+            temple.rotation.y = elapsed * 0.8;
+
+            // 平滑運鏡插值
+            if (isAnimating) {
+                camera.position.lerp(targetCamPos, 0.05);
+                controls.target.lerp(targetLookAt, 0.05);
+                if (camera.position.distanceTo(targetCamPos) < 0.2) isAnimating = false;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 視窗縮放自適應
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
