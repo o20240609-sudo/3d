@@ -416,9 +416,7 @@
             island.add(label);
             labelElements.push(div);
 
-            // 設施精細化改造
             if (idx === 0) {
-                // [01] 燈塔小屋與碼頭
                 const house = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.5, 2.0), stoneMat);
                 house.position.set(-0.6, 1.35, 0);
                 const roof = new THREE.Mesh(new THREE.ConeGeometry(1.8, 1.1, 4), new THREE.MeshStandardMaterial({ color: 0x2563eb, flatShading: true }));
@@ -434,7 +432,6 @@
                 boat.position.set(-6.5, 0.25, 2.2);
                 island.add(house, roof, lh, lhCap, pier, boat);
             } else if (idx === 1) {
-                // [02 升級] 工藝造鎮工坊：雙層複合屋頂、側翼倉庫、煙囪與外露齒輪裝飾
                 const mainBody = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.5, 2.0), new THREE.MeshStandardMaterial({ color: 0xd97706, flatShading: true }));
                 mainBody.position.set(0, 1.35, 0);
                 const sideWing = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 1.4), new THREE.MeshStandardMaterial({ color: 0xb45309, flatShading: true }));
@@ -449,7 +446,6 @@
                 chimney.position.set(0.7, 2.8, -0.5);
                 island.add(mainBody, sideWing, roofMain, roofWing, chimney);
             } else if (idx === 2) {
-                // [03] 核心展示廣場
                 const podium = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.6, 0.4, 24), stoneMat);
                 podium.position.y = 0.8;
                 const pavilion = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.4, 2.0), new THREE.MeshStandardMaterial({ color: 0xfde047, flatShading: true }));
@@ -458,21 +454,18 @@
                 jadeTower.position.set(1.5, 2.1, 0.4);
                 island.add(podium, pavilion, jadeTower);
             } else if (idx === 3) {
-                // [04 升級] 古典智慧神殿：主體台階、藍頂、四個角落加上獨立圓柱
                 const steps = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.5, 3.6), stoneMat);
                 steps.position.set(0, 0.85, 0.3);
                 const roof = new THREE.Mesh(new THREE.ConeGeometry(3.3, 1.3, 4), new THREE.MeshStandardMaterial({ color: 0x1d4ed8, flatShading: true }));
                 roof.position.set(0, 3.3, 0.3);
                 roof.rotation.y = Math.PI / 4;
                 island.add(steps, roof);
-                // 四個角落精細柱子
                 [[-1.5, -1.2], [1.5, -1.2], [-1.5, 1.7], [1.5, 1.7]].forEach(([px, pz]) => {
                     const col = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 2.0, 10), new THREE.MeshStandardMaterial({ color: 0xffffff }));
                     col.position.set(px, 2.0, pz);
                     island.add(col);
                 });
             } else if (idx === 4) {
-                // [05 升級] 生態冒險村：多棟錯落有致的小屋與石板庭院
                 const h1 = new THREE.Mesh(new THREE.BoxGeometry(1.8, 1.3, 1.7), stoneMat);
                 h1.position.set(1.2, 1.25, 0.3);
                 const r1 = new THREE.Mesh(new THREE.ConeGeometry(1.4, 1.0, 4), new THREE.MeshStandardMaterial({ color: 0xdc2626, flatShading: true }));
@@ -494,7 +487,6 @@
             }
         });
 
-        // 串聯五座島嶼的木造拱橋
         createWoodenBridge(new THREE.Vector3(-7.2, 0, -9.2), new THREE.Vector3(-4.5, 0, -8.5));
         createWoodenBridge(new THREE.Vector3(-0.5, 0, -2.5), new THREE.Vector3(-1.2, 0, -3.5));
         createWoodenBridge(new THREE.Vector3(4.2, 0, 3.8), new THREE.Vector3(7.0, 0, 4.3));
@@ -523,7 +515,7 @@
             }
         });
 
-        // 7. 海洋動態：將鯨魚與海豚改為航行中的木造帆船
+        // 7. 航行中的木造帆船（船頭自動配合移動方向）
         const sailingShip = new THREE.Group();
         const hull = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.9, 3.2), woodMat);
         const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 3.2), woodMat);
@@ -609,13 +601,21 @@
                 w.mesh.rotation.y = -w.angle;
             });
 
-            // 帆船在海面上繞島航行與海浪起伏
-            const shipAngle = elapsed * 0.08;
-            sailingShip.position.x = Math.cos(shipAngle) * 22;
-            sailingShip.position.z = Math.sin(shipAngle) * 22;
-            sailingShip.position.y = Math.sin(elapsed * 3) * 0.15 - 0.2;
-            sailingShip.rotation.y = -shipAngle - Math.PI / 2;
-            sailingShip.rotation.z = Math.sin(elapsed * 2) * 0.05;
+            // 帆船在島嶼群外圍安全海域繞行，且船頭自動配合移動方向
+            const shipRadius = 26; // 拉大半徑，完全不碰到島嶼
+            const shipAngle = elapsed * 0.07;
+            const nextAngle = shipAngle + 0.01; // 計算下一個微小步進點以得出前進方向
+
+            const currentX = Math.cos(shipAngle) * shipRadius;
+            const currentZ = Math.sin(shipAngle) * shipRadius;
+            const nextX = Math.cos(nextAngle) * shipRadius;
+            const nextZ = Math.sin(nextAngle) * shipRadius;
+
+            sailingShip.position.set(currentX, Math.sin(elapsed * 3) * 0.15 - 0.2, currentZ);
+            
+            // 讓船頭對準行進方向
+            sailingShip.lookAt(nextX, sailingShip.position.y, nextZ);
+            sailingShip.rotation.z = Math.sin(elapsed * 2) * 0.05; // 隨波浪微微搖晃
 
             if (isAnimating) {
                 camera.position.lerp(targetCamPos, 0.06);
