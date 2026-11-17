@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>巴比倫空中花園 - 3D 生態互動專題地圖</title>
+    <title>浮空島生態專題 - 3D 互動探索地圖</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { overflow: hidden; background-color: #1a1a2e; }
+        body { overflow: hidden; background-color: #0b192c; }
         #canvas-container { width: 100vw; height: 100vh; display: block; position: relative; }
 
         /* 3D 設施上方的漂浮名字提示框 */
         .facility-label {
-            background: rgba(28, 20, 13, 0.88);
-            border: 1.5px solid #ffd700;
-            color: #ffd700;
+            background: rgba(15, 23, 42, 0.88);
+            border: 1.5px solid #38bdf8;
+            color: #38bdf8;
             padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.85rem;
@@ -21,14 +21,14 @@
             letter-spacing: 1px;
             cursor: pointer;
             pointer-events: auto;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
             transition: transform 0.2s, background 0.2s, color 0.2s;
             white-space: nowrap;
             user-select: none;
         }
         .facility-label:hover {
-            background: #ffd700;
-            color: #1c140d;
+            background: #38bdf8;
+            color: #0f172a;
             transform: scale(1.12);
         }
         .facility-label::after {
@@ -39,7 +39,7 @@
             transform: translateX(-50%);
             border-width: 6px 6px 0;
             border-style: solid;
-            border-color: #ffd700 transparent transparent transparent;
+            border-color: #38bdf8 transparent transparent transparent;
         }
 
         /* 左側控制面板 */
@@ -48,23 +48,23 @@
             top: 20px;
             left: 20px;
             z-index: 10;
-            background: rgba(38, 28, 20, 0.85);
-            border: 2px solid #d4af37;
-            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 2px solid #38bdf8;
+            border-radius: 12px;
             padding: 20px;
-            color: #f4e8d1;
-            max-width: 300px;
-            backdrop-filter: blur(5px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            color: #f8fafc;
+            max-width: 310px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .ui-panel h1 { font-size: 1.3rem; color: #ffd700; margin-bottom: 8px; }
-        .ui-panel p { font-size: 0.85rem; line-height: 1.5; color: #dcd0c0; margin-bottom: 15px; }
+        .ui-panel h1 { font-size: 1.25rem; color: #38bdf8; margin-bottom: 8px; }
+        .ui-panel p { font-size: 0.85rem; line-height: 1.5; color: #cbd5e1; margin-bottom: 15px; }
 
         .nav-buttons { display: flex; flex-direction: column; gap: 8px; }
         button {
-            background: linear-gradient(135deg, #5c4328, #3d2b18);
-            color: #ffd700;
-            border: 1px solid #d4af37;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: #38bdf8;
+            border: 1px solid #38bdf8;
             padding: 9px 14px;
             border-radius: 6px;
             cursor: pointer;
@@ -72,7 +72,7 @@
             text-align: left;
             transition: all 0.25s ease;
         }
-        button:hover { background: #d4af37; color: #261c14; font-weight: bold; transform: translateX(4px); }
+        button:hover { background: #38bdf8; color: #0f172a; font-weight: bold; transform: translateX(4px); }
 
         /* 右下角設施介紹彈出視窗 */
         #info-card {
@@ -80,8 +80,8 @@
             bottom: 30px;
             right: 30px;
             z-index: 10;
-            background: rgba(32, 23, 16, 0.94);
-            border: 2px solid #4ecdc4;
+            background: rgba(15, 23, 42, 0.94);
+            border: 2px solid #f43f5e;
             border-radius: 12px;
             padding: 22px;
             color: #fff;
@@ -91,10 +91,10 @@
             animation: fadeIn 0.3s ease;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        #info-card h2 { color: #4ecdc4; font-size: 1.2rem; margin-bottom: 10px; border-bottom: 1px solid rgba(78, 205, 196, 0.3); padding-bottom: 6px; }
-        #info-card p { font-size: 0.92rem; line-height: 1.6; color: #e8e8e8; }
-        .close-btn { margin-top: 15px; background: #4ecdc4; color: #1a1a2e; border: none; text-align: center; width: 100%; font-weight: bold; }
-        .close-btn:hover { background: #3bb8b0; transform: none; }
+        #info-card h2 { color: #f43f5e; font-size: 1.2rem; margin-bottom: 10px; border-bottom: 1px solid rgba(244, 63, 94, 0.3); padding-bottom: 6px; }
+        #info-card p { font-size: 0.92rem; line-height: 1.6; color: #e2e8f0; }
+        .close-btn { margin-top: 15px; background: #f43f5e; color: #fff; border: none; text-align: center; width: 100%; font-weight: bold; }
+        .close-btn:hover { background: #e11d48; transform: none; }
     </style>
 </head>
 <body>
@@ -103,15 +103,15 @@
 
     <!-- 左側導覽控制面板 -->
     <div class="ui-panel">
-        <h1>🏛️ 巴比倫空中花園</h1>
-        <p>直接點擊建築上方的「金色提示框」或下方按鈕，探索各層設施與島嶼生態：</p>
+        <h1>🏝️ 浮空島生態專題</h1>
+        <p>點擊島上建築上方的「藍色提示框」或下方按鈕，探索各項精細設施：</p>
         <div class="nav-buttons">
-            <button onclick="focusFacility(0)">1F 古代灌溉水車（專題簡介）</button>
-            <button onclick="focusFacility(1)">2F 巴比倫繁華市集（商品展示）</button>
-            <button onclick="focusFacility(2)">3F 大圖書館星象儀（技術架構）</button>
-            <button onclick="focusFacility(3)">4F 頂層空中神殿（聯絡我們）</button>
-            <button onclick="resetView()" style="border-color: #aaa; color: #eee;">🔭 俯瞰全島與海洋生態</button>
-            <button onclick="toggleAtmosphere()" style="border-color: #4ecdc4; color: #4ecdc4;">🌓 切換白晝暖陽 / 星夜模式</button>
+            <button onclick="focusFacility(0)">⚓ 飛空艇與海港碼頭（專題簡介）</button>
+            <button onclick="focusFacility(1)">🏡 玻璃溫室與市集（商品/作品展示）</button>
+            <button onclick="focusFacility(2)">⚙️ 齒輪風車動力坊（技術架構）</button>
+            <button onclick="focusFacility(3)">🔭 古典觀星燈塔（聯絡與回饋）</button>
+            <button onclick="resetView()" style="border-color: #94a3b8; color: #f1f5f9;">🔭 俯瞰全島與動態海洋</button>
+            <button onclick="toggleAtmosphere()" style="border-color: #fbbf24; color: #fbbf24;">🌓 切換日落暖陽 / 奇幻星夜</button>
         </div>
     </div>
 
@@ -136,20 +136,20 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 
-        // 1. 場景與渲染器初始化
+        // 1. 場景、相機與渲染器初始化
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x87ceeb);
-        scene.fog = new THREE.FogExp2(0x87ceeb, 0.008);
+        scene.background = new THREE.Color(0x38bdf8);
+        scene.fog = new THREE.FogExp2(0x38bdf8, 0.006);
 
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(36, 26, 36);
+        camera.position.set(38, 28, 38);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-        // 初始化 2D 標籤渲染器 (用於顯示設施名字提示框)
         const labelRenderer = new CSS2DRenderer();
         labelRenderer.setSize(window.innerWidth, window.innerHeight);
         labelRenderer.domElement.style.position = 'absolute';
@@ -159,90 +159,87 @@
 
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
-        controls.maxPolarAngle = Math.PI / 2 - 0.03;
+        controls.maxPolarAngle = Math.PI / 2 - 0.02;
         controls.minDistance = 10;
-        controls.maxDistance = 80;
+        controls.maxDistance = 85;
 
-        // 2. 光源設置
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        // 2. 燈光設置
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
         scene.add(ambientLight);
 
-        const sunLight = new THREE.DirectionalLight(0xfff5e4, 1.6);
-        sunLight.position.set(25, 45, 25);
+        const sunLight = new THREE.DirectionalLight(0xfffbeb, 1.5);
+        sunLight.position.set(30, 50, 20);
         sunLight.castShadow = true;
         sunLight.shadow.mapSize.width = 2048;
         sunLight.shadow.mapSize.height = 2048;
+        sunLight.shadow.camera.near = 10;
+        sunLight.shadow.camera.far = 120;
+        const d = 35;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
         scene.add(sunLight);
 
-        // 3. 廣闊海洋場景
-        const seaGeo = new THREE.PlaneGeometry(400, 400, 32, 32);
+        // 3. 具有動態波浪的海洋
+        const seaGeo = new THREE.PlaneGeometry(450, 450, 45, 45);
         const seaMat = new THREE.MeshStandardMaterial({
-            color: 0x0077be,
-            roughness: 0.2,
-            metalness: 0.3,
+            color: 0x0284c7,
+            roughness: 0.15,
+            metalness: 0.2,
             flatShading: true
         });
         const sea = new THREE.Mesh(seaGeo, seaMat);
         sea.rotation.x = -Math.PI / 2;
-        sea.position.y = -4;
+        sea.position.y = -5;
         sea.receiveShadow = true;
         scene.add(sea);
 
-        // 4. 放大版巴比倫空中花園主體
+        // 4. 起伏山丘與平地的浮空島主體
         const islandGroup = new THREE.Group();
         scene.add(islandGroup);
 
-        const stoneMat = new THREE.MeshStandardMaterial({ color: 0xd9a773, flatShading: true });
-        const grassMat = new THREE.MeshStandardMaterial({ color: 0x4ca64c, flatShading: true });
-        const woodMat = new THREE.MeshStandardMaterial({ color: 0x7a4928, flatShading: true });
-        const goldMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.7, roughness: 0.2 });
-        const waterMat = new THREE.MeshStandardMaterial({ color: 0x38b6ff, emissive: 0x004466 });
+        const rockMat = new THREE.MeshStandardMaterial({ color: 0x57534e, flatShading: true });
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x22c55e, flatShading: true });
+        const woodMat = new THREE.MeshStandardMaterial({ color: 0x854d0e, flatShading: true });
+        const stoneMat = new THREE.MeshStandardMaterial({ color: 0xa8a29e, flatShading: true });
 
-        // 島嶼底部岩盤 (懸浮於海面上方)
-        const rockBase = new THREE.Mesh(new THREE.ConeGeometry(18, 8, 9), new THREE.MeshStandardMaterial({ color: 0x6b533e, flatShading: true }));
-        rockBase.rotation.x = Math.PI;
-        rockBase.position.y = -2.5;
-        islandGroup.add(rockBase);
+        // 島嶼底部懸浮岩盤
+        const islandBase = new THREE.Mesh(new THREE.ConeGeometry(22, 10, 10), rockMat);
+        islandBase.rotation.x = Math.PI;
+        islandBase.position.y = -3.5;
+        islandBase.castShadow = true;
+        islandBase.receiveShadow = true;
+        islandGroup.add(islandBase);
 
-        // 四層露台規格 (放大尺寸)
-        const levelsConfig = [
-            { y: 1.5, size: 22, label: "⚙️ 1F 古代灌溉水車", title: "1F 古代灌溉水車（專題簡介）", desc: "利用阿基米德螺旋原理將下方海水抽上空中花園。此區展示本專題的核心設計理念、開發背景與團隊成員介紹。" },
-            { y: 4.5, size: 16.5, label: "⛺ 2F 巴比倫繁華市集", title: "2F 巴比倫繁華市集（核心商品展示）", desc: "島上最熱鬧的交易中心，人民在此買賣香料與陶器。對應網站的動態商品展示區，支援分類篩選與購物車功能。" },
-            { y: 7.5, size: 11.5, label: "🔭 3F 大圖書館星象儀", title: "3F 大圖書館星象儀（系統技術架構）", desc: "學者觀測星象與記錄泥板文獻的聖地。此區完整解析網站使用的前端 3D WebGL 渲染技術、後端邏輯與資料庫設計。" },
-            { y: 10.5, size: 6.5, label: "🏛️ 4F 頂層空中神殿", title: "4F 頂層空中神殿（聯絡與許願池）", desc: "花園最高處的黃金聖殿，象徵智慧與願望的傳遞。歡迎在此填寫留言表單、給予專題回饋或前往 GitHub 檢視原始碼。" }
+        // 主平地與山丘群
+        const mainGround = new THREE.Mesh(new THREE.BoxGeometry(28, 1.8, 28), groundMat);
+        mainGround.position.y = 1.0;
+        mainGround.receiveShadow = true;
+        islandGroup.add(mainGround);
+
+        // 後方與側邊起伏山丘
+        const hill1 = new THREE.Mesh(new THREE.DodecahedronGeometry(8, 1), groundMat);
+        hill1.position.set(-7, 3.5, -6);
+        hill1.scale.set(1.4, 0.7, 1.4);
+        islandGroup.add(hill1);
+
+        const hill2 = new THREE.Mesh(new THREE.DodecahedronGeometry(6.5, 1), groundMat);
+        hill2.position.set(8, 2.8, 7);
+        hill2.scale.set(1.5, 0.6, 1.3);
+        islandGroup.add(hill2);
+
+        // 5. 設施設定與精細 3D 模型建立
+        const facilitiesData = [
+            { label: "⚓ 飛空艇與海港碼頭", title: "⚓ 飛空艇與海港碼頭（專題簡介）", desc: "冒險的起點！此區展示本專題的核心理念、開發背景、核心目標與團隊成員介紹。", pos: new THREE.Vector3(-9, 1.9, 9) },
+            { label: "🏡 玻璃溫室與市集", title: "🏡 玻璃溫室與市集（商品與作品展示）", desc: "島上的貿易與展售中心。對應網站的動態資料展示區，支援多條件篩選、詳細卡片與互動操作。", pos: new THREE.Vector3(4, 1.9, 5) },
+            { label: "⚙️ 齒輪風車動力坊", title: "⚙️ 齒輪風車動力坊（系統技術架構）", desc: "為全島提供動力的機械重鎮。完整解析網站的前端框架、WebGL 3D 互動渲染邏輯與後端資料庫串接架構。", pos: new THREE.Vector3(-7, 5.5, -6) },
+            { label: "🔭 古典觀星燈塔", title: "🔭 古典觀星燈塔（聯絡與回饋）", desc: "佇立於最高山巔的指引之塔。歡迎在此填寫互動留言表單、給予專題建議或前往 GitHub 檢視完整原始碼。", pos: new THREE.Vector3(8, 4.6, 7) }
         ];
 
         const facilityTargets = [];
 
-        levelsConfig.forEach((lvl, idx) => {
-            // 石造露台
-            const tier = new THREE.Mesh(new THREE.BoxGeometry(lvl.size, 2.6, lvl.size), stoneMat);
-            tier.position.y = lvl.y;
-            tier.castShadow = true;
-            tier.receiveShadow = true;
-            islandGroup.add(tier);
-
-            // 綠意草皮
-            const grass = new THREE.Mesh(new THREE.BoxGeometry(lvl.size + 0.4, 0.35, lvl.size + 0.4), grassMat);
-            grass.position.y = lvl.y + 1.45;
-            grass.receiveShadow = true;
-            islandGroup.add(grass);
-
-            // 露台角落石柱與垂吊藤蔓
-            const offset = lvl.size / 2 - 0.6;
-            [[-offset, -offset], [offset, -offset], [-offset, offset], [offset, offset]].forEach(([px, pz]) => {
-                const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.35, 1.8, 8), stoneMat);
-                pillar.position.set(px, lvl.y + 2.4, pz);
-                islandGroup.add(pillar);
-
-                const vine = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.4, 0.5), grassMat);
-                vine.position.set(px, lvl.y + 0.6, pz);
-                islandGroup.add(vine);
-            });
-        });
-
-        // 5. 為每一層打造專屬立體設施與名字提示框
-        function attachLabel(mesh, text, index, yOffset) {
+        function attachLabel(parentMesh, text, index, yOffset) {
             const div = document.createElement('div');
             div.className = 'facility-label';
             div.textContent = text;
@@ -252,173 +249,153 @@
             });
             const label = new CSS2DObject(div);
             label.position.set(0, yOffset, 0);
-            mesh.add(label);
+            parentMesh.add(label);
         }
 
-        // [1F 設施] 巨型古代水車 (位於第一層前方偏右)
-        const waterwheelGroup = new THREE.Group();
-        waterwheelGroup.position.set(6, 3.8, 8.5);
-        const wheelRing = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.25, 8, 16), woodMat);
-        waterwheelGroup.add(wheelRing);
-        for (let i = 0; i < 6; i++) {
-            const spoke = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.2, 0.2), woodMat);
-            spoke.rotation.z = (i * Math.PI) / 6;
-            waterwheelGroup.add(spoke);
-        }
-        islandGroup.add(waterwheelGroup);
-        attachLabel(waterwheelGroup, levelsConfig[0].label, 0, 2.6);
-        facilityTargets.push(waterwheelGroup);
+        // [設施 1] 飛空艇與海港碼頭
+        const dockGroup = new THREE.Group();
+        dockGroup.position.copy(facilitiesData[0].pos);
+        const pier = new THREE.Mesh(new THREE.BoxGeometry(4, 0.4, 6), woodMat);
+        // 飛空艇本體
+        const airship = new THREE.Group();
+        airship.position.set(0, 3.2, 0);
+        const balloon = new THREE.Mesh(new THREE.CapsuleGeometry(1.2, 3.2, 8, 16), new THREE.MeshStandardMaterial({ color: 0xef4444, flatShading: true }));
+        balloon.rotation.z = Math.PI / 2;
+        const cabin = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.7, 1.6), woodMat);
+        cabin.position.y = -1.5;
+        airship.add(balloon, cabin);
+        dockGroup.add(pier, airship);
+        islandGroup.add(dockGroup);
+        attachLabel(dockGroup, facilitiesData[0].label, 0, 4.2);
+        facilityTargets.push(dockGroup);
 
-        // [2F 設施] 巴比倫市集帳篷攤位 (位於第二層左前方)
+        // [設施 2] 玻璃溫室與市集
         const marketGroup = new THREE.Group();
-        marketGroup.position.set(-5, 6.2, 5.5);
-        const stallBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1, 2.2), woodMat);
-        const tentRoof = new THREE.Mesh(new THREE.ConeGeometry(2.5, 1.5, 4), new THREE.MeshStandardMaterial({ color: 0xd94e34, flatShading: true }));
-        tentRoof.position.y = 1.6;
-        tentRoof.rotation.y = Math.PI / 4;
-        marketGroup.add(stallBase, tentRoof);
+        marketGroup.position.copy(facilitiesData[1].pos);
+        const greenhouseBase = new THREE.Mesh(new THREE.BoxGeometry(4.5, 2.2, 3.5), stoneMat);
+        const glassRoof = new THREE.Mesh(new THREE.ConeGeometry(3.2, 1.8, 4), new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65, roughness: 0.1 }));
+        glassRoof.position.y = 2.0;
+        glassRoof.rotation.y = Math.PI / 4;
+        marketGroup.add(greenhouseBase, glassRoof);
         islandGroup.add(marketGroup);
-        attachLabel(marketGroup, levelsConfig[1].label, 1, 2.8);
+        attachLabel(marketGroup, facilitiesData[1].label, 1, 3.5);
         facilityTargets.push(marketGroup);
 
-        // [3F 設施] 大圖書館黃金星象儀 (位於第三層右側)
-        const astrolabeGroup = new THREE.Group();
-        astrolabeGroup.position.set(3.2, 10.2, 3.2);
-        const ring1 = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.12, 8, 24), goldMat);
-        const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.12, 8, 24), goldMat);
-        ring2.rotation.x = Math.PI / 3;
-        const coreSphere = new THREE.Mesh(new THREE.SphereGeometry(0.4, 12, 12), new THREE.MeshStandardMaterial({ color: 0x4ecdc4, emissive: 0x1a6b66 }));
-        astrolabeGroup.add(ring1, ring2, coreSphere);
-        islandGroup.add(astrolabeGroup);
-        attachLabel(astrolabeGroup, levelsConfig[2].label, 2, 2.1);
-        facilityTargets.push(astrolabeGroup);
+        // [設施 3] 齒輪風車動力坊
+        const millGroup = new THREE.Group();
+        millGroup.position.copy(facilitiesData[2].pos);
+        const tower = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.6, 3.5, 8), stoneMat);
+        tower.position.y = 1.75;
+        // 風車葉片群
+        const bladesGroup = new THREE.Group();
+        bladesGroup.position.set(0, 2.8, 1.3);
+        for (let i = 0; i < 4; i++) {
+            const blade = new THREE.Mesh(new THREE.BoxGeometry(0.3, 2.4, 0.1), woodMat);
+            blade.rotation.z = (i * Math.PI) / 2;
+            bladesGroup.add(blade);
+        }
+        millGroup.add(tower, bladesGroup);
+        islandGroup.add(millGroup);
+        attachLabel(millGroup, facilitiesData[2].label, 2, 4.2);
+        facilityTargets.push(millGroup);
+        millGroup.userData = { rotatingBlades: bladesGroup };
 
-        // [4F 設施] 頂層空中神殿 (位於第四層正中央)
-        const templeGroup = new THREE.Group();
-        templeGroup.position.set(0, 12.2, 0);
-        const templeRoof = new THREE.Mesh(new THREE.ConeGeometry(2.8, 1.6, 4), goldMat);
-        templeRoof.position.y = 2.0;
-        templeRoof.rotation.y = Math.PI / 4;
-        const crystal = new THREE.Mesh(new THREE.OctahedronGeometry(0.7, 0), new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xaa6600 }));
-        crystal.position.y = 0.8;
-        templeGroup.add(templeRoof, crystal);
-        // 神殿四根柱子
-        [[-1.4, -1.4], [1.4, -1.4], [-1.4, 1.4], [1.4, 1.4]].forEach(([cx, cz]) => {
-            const col = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 1.6, 8), stoneMat);
-            col.position.set(cx, 0.6, cz);
-            templeGroup.add(col);
-        });
-        islandGroup.add(templeGroup);
-        attachLabel(templeGroup, levelsConfig[3].label, 3, 3.3);
-        facilityTargets.push(templeGroup);
+        // [設施 4] 古典觀星燈塔
+        const lighthouseGroup = new THREE.Group();
+        lighthouseGroup.position.copy(facilitiesData[3].pos);
+        const lhTower = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 1.3, 4.5, 10), new THREE.MeshStandardMaterial({ color: 0xf8fafc, flatShading: true }));
+        lhTower.position.y = 2.25;
+        const lhTop = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 1.2, 10), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        lhTop.position.y = 4.8;
+        const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 12), new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xf59e0b }));
+        beacon.position.y = 5.6;
+        lighthouseGroup.add(lhTower, lhTop, beacon);
+        islandGroup.add(lighthouseGroup);
+        attachLabel(lighthouseGroup, facilitiesData[3].label, 3, 6.5);
+        facilityTargets.push(lighthouseGroup);
+        lighthouseGroup.userData = { beaconMesh: beacon };
 
-        // 從頂層流向大海的瀑布
-        const waterfall = new THREE.Mesh(new THREE.BoxGeometry(1.6, 17, 0.5), waterMat);
-        waterfall.position.set(0, 4.5, 11.2);
-        islandGroup.add(waterfall);
-
-        // 6. 建立島上立體人民（走路巡邏 & 定點工作）
+        // 6. 島上居民與動態生態
         const citizens = [];
-        const robeColors = [0xe63946, 0xf4a261, 0x2a9d8f, 0xe9c46a, 0x9b5de5, 0xffffff];
+        const outfitColors = [0x38bdf8, 0xf43f5e, 0x10b981, 0xfbbf24, 0xa855f7];
 
-        function createCitizen(color) {
-            const person = new THREE.Group();
-            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.28, 0.75, 6), new THREE.MeshStandardMaterial({ color }));
-            body.position.y = 0.375;
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 8, 8), new THREE.MeshStandardMaterial({ color: 0xffcdb2 }));
-            head.position.y = 0.9;
-            person.add(body, head);
-            person.castShadow = true;
-            return person;
+        function createNPC(color) {
+            const npc = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.18, 0.5, 4, 8), new THREE.MeshStandardMaterial({ color }));
+            body.position.y = 0.45;
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), new THREE.MeshStandardMaterial({ color: 0xfde047 }));
+            head.position.y = 0.85;
+            npc.add(body, head);
+            npc.castShadow = true;
+            return npc;
         }
 
-        // 沿著各層露台走動的人民
-        const walkersConfig = [
-            { y: 2.95, radius: 9.2, speed: 0.4, angle: 0 },
-            { y: 2.95, radius: 9.2, speed: -0.35, angle: 2.5 },
-            { y: 5.95, radius: 6.8, speed: 0.45, angle: 1.0 },
-            { y: 5.95, radius: 6.8, speed: 0.45, angle: 4.2 },
-            { y: 8.95, radius: 4.5, speed: -0.5, angle: 0.5 }
+        // 巡邏村民
+        const npcPaths = [
+            { start: new THREE.Vector3(-6, 1.9, 6), end: new THREE.Vector3(2, 1.9, 2), speed: 0.8 },
+            { start: new THREE.Vector3(-3, 1.9, -3), end: new THREE.Vector3(5, 1.9, -5), speed: 0.6 }
         ];
 
-        walkersConfig.forEach((cfg, i) => {
-            const p = createCitizen(robeColors[i % robeColors.length]);
-            islandGroup.add(p);
-            citizens.push({ mesh: p, type: 'walk', ...cfg });
+        npcPaths.forEach((pathInfo, idx) => {
+            const npc = createNPC(outfitColors[idx % outfitColors.length]);
+            islandGroup.add(npc);
+            citizens.push({ mesh: npc, ...pathInfo, progress: Math.random() });
         });
 
-        // 在設施旁忙碌工作的人民 (市集攤販、水車工匠、神殿祭司)
-        const workersConfig = [
-            { x: -3.5, y: 5.95, z: 5.5, phase: 0 },   // 市集老闆
-            { x: 4.5, y: 2.95, z: 8.5, phase: 1.5 },  // 水車工匠
-            { x: 1.8, y: 8.95, z: 3.2, phase: 3.0 },  // 圖書館學者
-            { x: 0, y: 11.95, z: 2.2, phase: 4.5 }    // 神殿祭司
-        ];
-
-        workersConfig.forEach((cfg, i) => {
-            const p = createCitizen(robeColors[(i + 2) % robeColors.length]);
-            p.position.set(cfg.x, cfg.y, cfg.z);
-            islandGroup.add(p);
-            citizens.push({ mesh: p, type: 'work', baseY: cfg.y, phase: cfg.phase });
-        });
-
-        // 7. 海洋生物：海豚躍出水面 & 鯨魚游動噴水
-        // 建立海豚
+        // 7. 精細海洋生物：擬真海豚與會擺尾噴水的巨型鯨魚
+        // 海豚
         const dolphin = new THREE.Group();
-        const dolphinBody = new THREE.Mesh(new THREE.ConeGeometry(0.45, 2.2, 8), new THREE.MeshStandardMaterial({ color: 0x5c9ead, flatShading: true }));
-        dolphinBody.rotation.x = Math.PI / 2;
-        const dolphinFin = new THREE.Mesh(new THREE.ConeGeometry(0.25, 0.7, 4), new THREE.MeshStandardMaterial({ color: 0x326273 }));
-        dolphinFin.position.set(0, 0.35, 0);
-        dolphin.add(dolphinBody, dolphinFin);
+        const dBody = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.4, 8), new THREE.MeshStandardMaterial({ color: 0x0284c7, flatShading: true }));
+        dBody.rotation.x = Math.PI / 2;
+        const dFin = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.6, 4), new THREE.MeshStandardMaterial({ color: 0x0369a1 }));
+        dFin.position.set(0, 0.3, 0);
+        dolphin.add(dBody, dFin);
         scene.add(dolphin);
 
-        // 建立鯨魚與噴水粒子
+        // 巨型鯨魚
         const whale = new THREE.Group();
-        const whaleBody = new THREE.Mesh(new THREE.BoxGeometry(2.2, 1.6, 5.2), new THREE.MeshStandardMaterial({ color: 0x2b4162, flatShading: true }));
-        const whaleTail = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.3, 1.2), new THREE.MeshStandardMaterial({ color: 0x2b4162 }));
-        whaleTail.position.set(0, 0.2, -3.0);
-        whale.add(whaleBody, whaleTail);
-        whale.position.set(-22, -4.1, 10);
+        const wBody = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.8, 6), new THREE.MeshStandardMaterial({ color: 0x1e293b, flatShading: true }));
+        const wTail = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.3, 1.4), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        wTail.position.set(0, 0.2, -3.5);
+        whale.add(wBody, wTail);
+        whale.position.set(-25, -4.2, 12);
         scene.add(whale);
 
-        // 鯨魚噴水粒子群
+        // 鯨魚噴水粒子
         const spoutParticles = [];
-        const spoutMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.85 });
-        for (let i = 0; i < 18; i++) {
-            const drop = new THREE.Mesh(new THREE.SphereGeometry(0.18, 6, 6), spoutMat);
+        const spoutMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.8 });
+        for (let i = 0; i < 20; i++) {
+            const drop = new THREE.Mesh(new THREE.SphereGeometry(0.15, 6, 6), spoutMat);
             drop.visible = false;
             whale.add(drop);
             spoutParticles.push({
                 mesh: drop,
-                vx: (Math.random() - 0.5) * 0.08,
-                vy: 0.15 + Math.random() * 0.12,
-                vz: (Math.random() - 0.5) * 0.08,
+                vx: (Math.random() - 0.5) * 0.09,
+                vy: 0.18 + Math.random() * 0.1,
+                vz: (Math.random() - 0.5) * 0.09,
                 life: 0
             });
         }
 
         // 8. 相機運鏡與互動控制
-        let targetCamPos = new THREE.Vector3(36, 26, 36);
-        let targetLookAt = new THREE.Vector3(0, 6, 0);
+        let targetCamPos = new THREE.Vector3(38, 28, 38);
+        let targetLookAt = new THREE.Vector3(0, 3, 0);
         let isAnimating = false;
 
         window.focusFacility = (index) => {
-            const targetMesh = facilityTargets[index];
-            const worldPos = new THREE.Vector3();
-            targetMesh.getWorldPosition(worldPos);
-
-            targetLookAt.copy(worldPos);
-            targetCamPos.set(worldPos.x + 8, worldPos.y + 4.5, worldPos.z + 9);
+            const targetPos = facilitiesData[index].pos;
+            targetLookAt.copy(targetPos);
+            targetCamPos.set(targetPos.x + 7, targetPos.y + 4.5, targetPos.z + 8);
             isAnimating = true;
 
-            document.getElementById('card-title').innerText = levelsConfig[index].title;
-            document.getElementById('card-desc').innerText = levelsConfig[index].desc;
+            document.getElementById('card-title').innerText = facilitiesData[index].title;
+            document.getElementById('card-desc').innerText = facilitiesData[index].desc;
             document.getElementById('info-card').style.display = 'block';
         };
 
         window.resetView = () => {
-            targetCamPos.set(36, 26, 36);
-            targetLookAt.set(0, 6, 0);
+            targetCamPos.set(38, 28, 38);
+            targetLookAt.set(0, 3, 0);
             isAnimating = true;
             closeCard();
         };
@@ -431,97 +408,98 @@
         window.toggleAtmosphere = () => {
             isNight = !isNight;
             if (isNight) {
-                scene.background = new THREE.Color(0x0b132b);
-                scene.fog.color = new THREE.Color(0x0b132b);
-                sunLight.intensity = 0.25;
-                ambientLight.intensity = 0.35;
-                seaMat.color = new THREE.Color(0x002b49);
+                scene.background = new THREE.Color(0x0f172a);
+                scene.fog.color = new THREE.Color(0x0f172a);
+                sunLight.intensity = 0.2;
+                ambientLight.intensity = 0.3;
+                seaMat.color = new THREE.Color(0x090d16);
             } else {
-                scene.background = new THREE.Color(0x87ceeb);
-                scene.fog.color = new THREE.Color(0x87ceeb);
-                sunLight.intensity = 1.6;
-                ambientLight.intensity = 0.7;
-                seaMat.color = new THREE.Color(0x0077be);
+                scene.background = new THREE.Color(0x38bdf8);
+                scene.fog.color = new THREE.Color(0x38bdf8);
+                sunLight.intensity = 1.5;
+                ambientLight.intensity = 0.65;
+                seaMat.color = new THREE.Color(0x0284c7);
             }
         };
 
-        // 9. 主動畫迴圈
+        // 9. 動畫迴圈
         const clock = new THREE.Clock();
         function animate() {
             requestAnimationFrame(animate);
             const elapsed = clock.getElapsedTime();
 
-            // 島嶼微幅懸浮與設施機械運轉
-            islandGroup.position.y = Math.sin(elapsed * 1.1) * 0.25;
-            waterwheelGroup.rotation.z = -elapsed * 1.2;
-            ring1.rotation.y = elapsed * 0.9;
-            ring2.rotation.z = elapsed * 1.3;
-            crystal.rotation.y = elapsed * 1.5;
-            crystal.position.y = 0.8 + Math.sin(elapsed * 2.5) * 0.15;
+            // 島嶼微幅浮空起伏
+            islandGroup.position.y = Math.sin(elapsed * 1.2) * 0.2;
 
-            // 人民走路與工作動態
+            // 海洋波浪頂點動畫
+            const posAttr = seaGeo.attributes.position;
+            for (let i = 0; i < posAttr.count; i++) {
+                const u = posAttr.getX(i);
+                const v = posAttr.getY(i);
+                const z = Math.sin(u * 0.15 + elapsed * 2) * Math.cos(v * 0.15 + elapsed * 2) * 0.35;
+                posAttr.setZ(i, z);
+            }
+            posAttr.needsUpdate = true;
+
+            // 設施機械運轉
+            if (millGroup.userData.rotatingBlades) {
+                millGroup.userData.rotatingBlades.rotation.z -= 0.025;
+            }
+            if (lighthouseGroup.userData.beaconMesh) {
+                lighthouseGroup.userData.beaconMesh.position.x = Math.sin(elapsed * 3) * 0.3;
+            }
+
+            // NPC 巡邏移動
             citizens.forEach(c => {
-                if (c.type === 'walk') {
-                    c.angle += c.speed * 0.015;
-                    // 沿著方形露台邊緣行走 (使用平滑方圓軌跡)
-                    const cos = Math.cos(c.angle);
-                    const sin = Math.sin(c.angle);
-                    c.mesh.position.x = Math.sign(cos) * Math.pow(Math.abs(cos), 0.5) * c.radius;
-                    c.mesh.position.z = Math.sign(sin) * Math.pow(Math.abs(sin), 0.5) * c.radius;
-                    c.mesh.position.y = c.y + Math.abs(Math.sin(elapsed * 10)) * 0.08; // 走路小碎步彈跳
-                    c.mesh.rotation.y = -c.angle;
-                } else if (c.type === 'work') {
-                    // 工作者上下律動與左右轉身忙碌
-                    c.mesh.position.y = c.baseY + Math.abs(Math.sin(elapsed * 6 + c.phase)) * 0.12;
-                    c.mesh.rotation.y = Math.sin(elapsed * 2 + c.phase) * 0.8;
-                }
+                c.progress += 0.003 * c.speed;
+                if (c.progress > 1) c.progress = 0;
+                c.mesh.position.lerpVectors(c.start, c.end, Math.sin(c.progress * Math.PI * 2) * 0.5 + 0.5);
+                c.mesh.position.y = c.start.y + Math.abs(Math.sin(elapsed * 12)) * 0.08;
             });
 
-            // 海豚躍出水面週期動畫 (每 6 秒一次完整躍出)
-            const dolphinCycle = elapsed % 6;
-            if (dolphinCycle < 2.2) {
-                const t = dolphinCycle / 2.2; // 0 -> 1
-                const jumpX = 16 + t * 10;
-                const jumpY = -5.2 + Math.sin(t * Math.PI) * 4.5; // 拋物線高度
-                dolphin.position.set(jumpX, jumpY, 14);
-                dolphin.rotation.z = (0.5 - t) * 1.8; // 俯仰角隨拋物線變化
-                dolphin.rotation.y = Math.PI / 2;
+            // 海豚躍出水面
+            const dCycle = elapsed % 6.5;
+            if (dCycle < 2.2) {
+                const t = dCycle / 2.2;
+                dolphin.position.set(-16 + t * 14, -4.8 + Math.sin(t * Math.PI) * 4.2, -8);
+                dolphin.rotation.z = (0.5 - t) * 1.6;
+                dolphin.rotation.y = -Math.PI / 4;
                 dolphin.visible = true;
             } else {
                 dolphin.visible = false;
             }
 
-            // 鯨魚繞島巡游與定期噴水
-            const whaleAngle = elapsed * 0.12;
-            whale.position.x = Math.cos(whaleAngle) * 26;
-            whale.position.z = Math.sin(whaleAngle) * 26;
-            whale.rotation.y = -whaleAngle;
+            // 鯨魚巡游與尾鰭擺動、定期噴水
+            const wAngle = elapsed * 0.1;
+            whale.position.x = Math.cos(wAngle) * 30;
+            whale.position.z = Math.sin(wAngle) * 30;
+            whale.rotation.y = -wAngle - Math.PI / 2;
+            wTail.rotation.x = Math.sin(elapsed * 5) * 0.2; // 尾鰭上下擺動
 
-            // 每 7 秒噴水一次，持續 2.5 秒
-            const spoutCycle = elapsed % 7;
-            const isSpouting = spoutCycle < 2.5;
+            const sCycle = elapsed % 7;
+            const spouting = sCycle < 2.5;
             spoutParticles.forEach((p, idx) => {
-                if (isSpouting) {
+                if (spouting) {
                     if (!p.mesh.visible || p.life > 1.0) {
                         p.mesh.visible = true;
-                        p.mesh.position.set(0, 0.9, 1.5);
-                        p.life = (idx / spoutParticles.length) * 0.5;
+                        p.mesh.position.set(0, 1.1, -1.5);
+                        p.life = (idx / spoutParticles.length) * 0.4;
                     }
                     p.mesh.position.x += p.vx;
                     p.mesh.position.y += p.vy;
                     p.mesh.position.z += p.vz;
-                    p.vy -= 0.006; // 重力下墜
-                    p.life += 0.025;
+                    p.vy -= 0.005;
+                    p.life += 0.02;
                     if (p.mesh.position.y < 0.5) {
-                        p.vy = 0.15 + Math.random() * 0.1;
-                        p.mesh.position.set(0, 0.9, 1.5);
+                        p.vy = 0.18 + Math.random() * 0.1;
+                        p.mesh.position.set(0, 1.1, -1.5);
                     }
                 } else {
                     p.mesh.visible = false;
                 }
             });
 
-            // 平滑運鏡插值
+            // 平滑相機運鏡
             if (isAnimating) {
                 camera.position.lerp(targetCamPos, 0.06);
                 controls.target.lerp(targetLookAt, 0.06);
